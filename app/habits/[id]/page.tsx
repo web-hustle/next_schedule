@@ -111,17 +111,14 @@ export default function HabitDetailPage() {
           <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">날짜별 기록</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center pt-2">
+          <CardContent className="pt-2 px-2">
             <Calendar
               mode="single"
               month={month}
               onMonthChange={setMonth}
               selected={undefined}
               modifiers={{ logged: loggedDates }}
-              modifiersClassNames={{
-                logged: "rdp-logged",
-              }}
-              className="p-0"
+              className="w-full [--cell-size:--spacing(11)]"
               components={{
                 DayButton: ({ day, modifiers, className, ...props }) => {
                   const key = toKSTDateKey(day.date)
@@ -132,19 +129,19 @@ export default function HabitDetailPage() {
                     <button
                       {...props}
                       className={cn(
-                        "relative flex flex-col items-center justify-center w-9 h-9 rounded-md text-xs select-none",
+                        "relative flex flex-col items-center justify-center w-full h-11 rounded-md text-xs select-none",
                         "hover:bg-accent transition-colors",
                         isToday && "ring-1 ring-primary",
                         count > 0
                           ? "bg-green-100 dark:bg-green-900/40 font-semibold"
                           : "text-muted-foreground",
-                        modifiers.outside && "opacity-40",
+                        modifiers.outside && "opacity-30",
                         className,
                       )}
                     >
-                      <span>{day.date.getDate()}</span>
+                      <span className="text-sm">{day.date.getDate()}</span>
                       {count > 0 && (
-                        <span className="text-[9px] text-green-700 dark:text-green-400 leading-none">
+                        <span className="text-[10px] text-green-700 dark:text-green-400 leading-none mt-0.5">
                           {count}{habit.unit}
                         </span>
                       )}
@@ -179,7 +176,7 @@ export default function HabitDetailPage() {
               }
 
               return (
-                <ul className="divide-y">
+                <ul className="divide-y max-h-64 overflow-y-auto">
                   {entries.map(({ date, count }) => (
                     <li key={date.toISOString()} className="flex items-center justify-between py-2 text-sm">
                       <span>
