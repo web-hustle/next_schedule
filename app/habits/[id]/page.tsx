@@ -115,7 +115,7 @@ export default function HabitDetailPage() {
               modifiers={{ logged: loggedDates }}
               className="w-full [--cell-size:--spacing(10)]"
               classNames={{
-                week: "flex w-full mt-0.5",
+                week: "flex w-full mt-1 gap-1",
                 day: "flex-1 p-0",
               }}
               components={{
