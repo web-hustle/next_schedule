@@ -83,11 +83,6 @@ export default function HabitDetailPage() {
           </Link>
           <div className="flex-1 min-w-0">
             <h1 className="text-lg font-bold truncate">{habit.name}</h1>
-            {habit.aliases.length > 0 && (
-              <p className="text-xs text-muted-foreground">
-                별명: {habit.aliases.join(", ")}
-              </p>
-            )}
           </div>
           <Button size="sm" className="gap-1.5" onClick={() => setConfirmOpen(true)}>
             <Plus className="h-4 w-4" />
@@ -111,14 +106,18 @@ export default function HabitDetailPage() {
           <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">날짜별 기록</CardTitle>
           </CardHeader>
-          <CardContent className="pt-2 px-2">
+          <CardContent className="pt-2 px-1 pb-3">
             <Calendar
               mode="single"
               month={month}
               onMonthChange={setMonth}
               selected={undefined}
               modifiers={{ logged: loggedDates }}
-              className="w-full [--cell-size:--spacing(11)]"
+              className="w-full [--cell-size:--spacing(10)]"
+              classNames={{
+                week: "flex w-full mt-0.5",
+                day: "flex-1 p-0",
+              }}
               components={{
                 DayButton: ({ day, modifiers, className, ...props }) => {
                   const key = toKSTDateKey(day.date)
@@ -129,19 +128,21 @@ export default function HabitDetailPage() {
                     <button
                       {...props}
                       className={cn(
-                        "relative flex flex-col items-center justify-center w-full h-11 rounded-md text-xs select-none",
-                        "hover:bg-accent transition-colors",
-                        isToday && "ring-1 ring-primary",
+                        "flex flex-col items-center justify-center w-full h-14 rounded-md select-none transition-colors",
+                        "hover:bg-accent",
+                        isToday && "ring-2 ring-primary ring-inset",
                         count > 0
-                          ? "bg-green-100 dark:bg-green-900/40 font-semibold"
+                          ? "bg-green-100 dark:bg-green-900/40"
                           : "text-muted-foreground",
-                        modifiers.outside && "opacity-30",
+                        modifiers.outside && "opacity-25",
                         className,
                       )}
                     >
-                      <span className="text-sm">{day.date.getDate()}</span>
+                      <span className={cn("text-sm leading-none", count > 0 && "font-semibold")}>
+                        {day.date.getDate()}
+                      </span>
                       {count > 0 && (
-                        <span className="text-[10px] text-green-700 dark:text-green-400 leading-none mt-0.5">
+                        <span className="text-xs text-green-700 dark:text-green-400 leading-none mt-1">
                           {count}{habit.unit}
                         </span>
                       )}
