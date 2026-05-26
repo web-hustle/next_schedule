@@ -73,33 +73,36 @@ export function TodoList({ todos, onToggle }: Props) {
                 className="mt-0.5 shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium leading-snug ${isDone ? "line-through text-muted-foreground" : ""}`}>
-                  {todo.title}
-                </p>
-                {todo.description && (
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate">{todo.description}</p>
-                )}
-                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                  {todo.categories && (
-                    <Badge
-                      variant="secondary"
-                      style={todo.categories.color ? { backgroundColor: todo.categories.color + "33", color: todo.categories.color } : {}}
-                      className="text-xs px-1.5 py-0"
-                    >
-                      {todo.categories.name}
-                    </Badge>
-                  )}
-                  {todo.priority && (
-                    <Badge variant="outline" className="text-xs px-1.5 py-0">
-                      {todo.priority === 3 ? "높음" : todo.priority === 2 ? "중간" : "낮음"}
-                    </Badge>
-                  )}
+                {/* 제목 + 날짜 한 줄 */}
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className={`text-sm font-medium leading-snug truncate ${isDone ? "line-through text-muted-foreground" : ""}`}>
+                    {todo.title}
+                  </p>
                   {rel && (
-                    <span className={`text-xs ${rel === "지남" ? "text-destructive" : rel === "오늘" ? "text-orange-500" : "text-muted-foreground"}`}>
+                    <span className={`text-xs shrink-0 ${rel === "지남" ? "text-destructive" : rel === "오늘" ? "text-orange-500" : "text-muted-foreground"}`}>
                       {rel}
                     </span>
                   )}
                 </div>
+                {/* 뱃지 줄 */}
+                {(todo.categories || todo.priority) && (
+                  <div className="flex items-center gap-1.5 mt-1">
+                    {todo.categories && (
+                      <Badge
+                        variant="secondary"
+                        style={todo.categories.color ? { backgroundColor: todo.categories.color + "33", color: todo.categories.color } : {}}
+                        className="text-xs px-1.5 py-0"
+                      >
+                        {todo.categories.name}
+                      </Badge>
+                    )}
+                    {todo.priority && (
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        {todo.priority === 3 ? "높음" : todo.priority === 2 ? "중간" : "낮음"}
+                      </Badge>
+                    )}
+                  </div>
+                )}
               </div>
             </li>
           )

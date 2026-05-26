@@ -10,6 +10,7 @@ export async function getTodos(userId: string): Promise<Todo[]> {
     .eq("is_done", false)
     .order("priority", { ascending: false, nullsFirst: false })
     .order("due_date", { ascending: true, nullsFirst: false })
+    .limit(20)
 
   if (error) throw error
   return data as Todo[]
