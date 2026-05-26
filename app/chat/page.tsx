@@ -37,18 +37,35 @@ export default function ChatPage() {
     }
     setMessages((prev) => [...prev, optimistic])
 
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    })
-    const data = await res.json()
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      })
+      const data = await res.json()
 
-    setMessages((prev) => {
-      // Replace optimistic with real user msg, then add assistant msg
-      const without = prev.filter((m) => m.id !== tempId)
-      return [...without, data.user_msg, data.assistant_msg]
-    })
+      if (!res.ok || !data.user_msg) {
+        // Replace optimistic with error message
+        const errMsg: ChatMessage = {
+          id: `err-${Date.now()}`,
+          user_id: "",
+          role: "assistant",
+          content: "오류가 발생했어요. 잠시 후 다시 시도해주세요.",
+          meta: null,
+          created_at: new Date().toISOString(),
+        }
+        setMessages((prev) => prev.filter((m) => m.id !== tempId).concat(errMsg))
+        return
+      }
+
+      setMessages((prev) => {
+        const without = prev.filter((m) => m.id !== tempId)
+        return [...without, data.user_msg, data.assistant_msg]
+      })
+    } catch {
+      setMessages((prev) => prev.filter((m) => m.id !== tempId))
+    }
   }
 
   function handleNewMessage(msg: ChatMessage) {

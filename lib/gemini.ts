@@ -4,19 +4,6 @@ import { nowKSTIso } from "./time"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
-const RESPONSE_SCHEMA = {
-  type: "object",
-  properties: {
-    type: {
-      type: "string",
-      enum: ["todo", "habit_log", "habit_suggestion", "unknown"],
-    },
-    data: { type: "object" },
-    reason: { type: "string" },
-  },
-  required: ["type"],
-}
-
 function buildSystemPrompt(habits: Habit[], categories: Category[], nowIso: string): string {
   return `
 당신은 개인 일정/습관 트래커 앱의 자연어 파서입니다.
@@ -74,7 +61,6 @@ export async function parseUserInput(
     model: "gemini-2.5-flash",
     generationConfig: {
       responseMimeType: "application/json",
-      responseSchema: RESPONSE_SCHEMA as never,
     },
     systemInstruction: buildSystemPrompt(habits, categories, nowIso),
   })
