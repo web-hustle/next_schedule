@@ -11,6 +11,7 @@ import type { ChatMessage } from "@/lib/schemas"
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(true)
+  const [aiTyping, setAiTyping] = useState(false)
 
   const loadHistory = useCallback(async () => {
     try {
@@ -25,7 +26,7 @@ export default function ChatPage() {
   useEffect(() => { loadHistory() }, [loadHistory])
 
   async function handleSend(text: string) {
-    // Optimistically add user bubble
+    // 내 메시지 즉시 표시
     const tempId = `temp-${Date.now()}`
     const optimistic: ChatMessage = {
       id: tempId,
@@ -36,6 +37,7 @@ export default function ChatPage() {
       created_at: new Date().toISOString(),
     }
     setMessages((prev) => [...prev, optimistic])
+    setAiTyping(true)
 
     try {
       const res = await fetch("/api/chat", {
@@ -46,7 +48,6 @@ export default function ChatPage() {
       const data = await res.json()
 
       if (!res.ok || !data.user_msg) {
-        // Replace optimistic with error message
         const errMsg: ChatMessage = {
           id: `err-${Date.now()}`,
           user_id: "",
@@ -65,6 +66,8 @@ export default function ChatPage() {
       })
     } catch {
       setMessages((prev) => prev.filter((m) => m.id !== tempId))
+    } finally {
+      setAiTyping(false)
     }
   }
 
@@ -74,7 +77,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
       <div className="flex items-center gap-2 border-b px-4 py-3 shrink-0">
         <Link href="/">
           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -84,17 +86,19 @@ export default function ChatPage() {
         <h1 className="font-semibold">채팅</h1>
       </div>
 
-      {/* Messages */}
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <p className="text-sm text-muted-foreground">불러오는 중...</p>
         </div>
       ) : (
-        <ChatMessages messages={messages} onNewMessage={handleNewMessage} />
+        <ChatMessages
+          messages={messages}
+          isLoading={aiTyping}
+          onNewMessage={handleNewMessage}
+        />
       )}
 
-      {/* Input */}
-      <ChatInput onSend={handleSend} />
+      <ChatInput onSend={handleSend} disabled={aiTyping} />
     </div>
   )
 }

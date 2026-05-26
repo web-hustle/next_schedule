@@ -7,16 +7,18 @@ import { Send } from "lucide-react"
 
 interface Props {
   onSend: (text: string) => Promise<void>
+  disabled?: boolean
 }
 
-export function ChatInput({ onSend }: Props) {
+export function ChatInput({ onSend, disabled }: Props) {
   const [text, setText] = useState("")
   const [isPending, startTransition] = useTransition()
+  const isDisabled = isPending || disabled
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   function handleSend() {
     const trimmed = text.trim()
-    if (!trimmed || isPending) return
+    if (!trimmed || isDisabled) return
     setText("")
     startTransition(async () => {
       await onSend(trimmed)
@@ -41,12 +43,12 @@ export function ChatInput({ onSend }: Props) {
         placeholder="메시지 입력... (Enter로 전송, Shift+Enter 줄바꿈)"
         className="resize-none min-h-[44px] max-h-32 flex-1"
         rows={1}
-        disabled={isPending}
+        disabled={isDisabled}
       />
       <Button
         size="icon"
         onClick={handleSend}
-        disabled={!text.trim() || isPending}
+        disabled={!text.trim() || isDisabled}
         className="shrink-0 h-10 w-10"
       >
         <Send className="h-4 w-4" />
